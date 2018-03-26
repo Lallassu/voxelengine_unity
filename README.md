@@ -1,9 +1,12 @@
-# voxelengine_unity
+# Unity3D Voxel Engine
 Voxel engine made in C# for Unity
 
 This engine has not been updated for later versions of Unity and was earlier sold as an asset (2015/2016).
 
 It might require some tweaking to get it to work.
+
+Voxel Engine Description: ![Here](https://github.com/Lallassu/voxelengine_unity/tree/master/Assets)
+
 
 # Screenshots & Videos
 [![Demo 1](https://img.youtube.com/vi/0n6VRMVW9bo/hqdefault.jpg)](https://www.youtube.com/watch?v=0n6VRMVW9bo)
