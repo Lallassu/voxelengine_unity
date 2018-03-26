@@ -1,0 +1,13 @@
+LazyFog is a simple fog shader / material for unity's built in particle system  
+
+To familiarize yourself with the shader parameters, please play around with the example scene! 
+
+We recommend you to visit our homepage http://www.lemonspawn.com for general instructions.
+
+The main resource you need from this package is the fog shader, located at Shaders/LazyFog. To use this shader in your project,
+copy it into the assets directory and create a material that uses this shader. 
+
+Then, create a particle system using billboard renderer (with no max particle size) and assign the fog material to the renderer. Check out the properties of the particle system 
+included in the example scene. 
+
+

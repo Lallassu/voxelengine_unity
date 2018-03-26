@@ -1,0 +1,26 @@
+﻿<Properties StartupItem="Assembly-CSharp.csproj">
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="Unity.Instance.Unity Editor" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/voxel_engine/World.cs">
+    <Files>
+      <File FileName="Assets/voxel_engine/World.cs" Line="929" Column="8" />
+      <File FileName="Assets/voxel_engine/TextureHandler.cs" Line="7" Column="4" />
+      <File FileName="Assets/voxel_engine/BlockPool.cs" Line="1" Column="1" />
+      <File FileName="Assets/voxel_engine/Player.cs" Line="1" Column="1" />
+      <File FileName="Assets/Standard Assets/Cameras/Scripts/ProtectCameraFromWallClip.cs" Line="1" Column="1" />
+      <File FileName="Assets/voxel_engine/DungeonGenerator.cs" Line="1" Column="1" />
+      <File FileName="Assets/voxel_engine/MapHandler.cs" Line="1" Column="1" />
+      <File FileName="Assets/voxel_engine/platformMap.cs" Line="1" Column="1" />
+      <File FileName="Assets/voxel_engine/Weapon.cs" Line="1" Column="1" />
+      <File FileName="Assets/voxel_engine/Vox.cs" Line="1" Column="1" />
+      <File FileName="Assets/voxel_engine/Block.cs" Line="1" Column="1" />
+      <File FileName="Assets/voxel_engine/Chunk.cs" Line="1" Column="1" />
+      <File FileName="Assets/voxel_engine/ChunkCollision.cs" Line="1" Column="1" />
+      <File FileName="Assets/voxel_engine/Missile.cs" Line="1" Column="1" />
+      <File FileName="Assets/voxel_engine/MissileCollision.cs" Line="1" Column="1" />
+    </Files>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+</Properties>
