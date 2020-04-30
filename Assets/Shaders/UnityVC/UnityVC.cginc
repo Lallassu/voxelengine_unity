@@ -1,10 +1,9 @@
-﻿// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
+// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
 
 // Upgrade NOTE: replaced '_Object2World' with 'unity_ObjectToWorld'
 
 #ifndef UNITY_VC_INCLUDED
 #define UNITY_VC_INCLUDED
-
 struct VertexInput_VC
 {
 	float4 vertex	: POSITION;
@@ -34,7 +33,7 @@ struct VertexOutputForwardBase_VC
 	float4 pos							: SV_POSITION;
 	float4 tex							: TEXCOORD0;
 	half3 eyeVec 						: TEXCOORD1;
-	half4 tangentToWorldAndParallax[3]	: TEXCOORD2;	// [3x3:tangentToWorld | 1x3:viewDirForParallax]
+	float4 tangentToWorldAndPackedData[3]	: TEXCOORD2;	// [3x3:tangentToWorld | 1x3:viewDirForParallax]
 	half4 ambientOrLightmapUV			: TEXCOORD5;	// SH or Lightmap UV
 	SHADOW_COORDS(6)
 	UNITY_FOG_COORDS(7)
@@ -63,13 +62,13 @@ VertexOutputForwardBase_VC vertForwardBase_VC (VertexInput_VC v)
 		float4 tangentWorld = float4(UnityObjectToWorldDir(v.tangent.xyz), v.tangent.w);
 
 		float3x3 tangentToWorld = CreateTangentToWorldPerVertex(normalWorld, tangentWorld.xyz, tangentWorld.w);
-		o.tangentToWorldAndParallax[0].xyz = tangentToWorld[0];
-		o.tangentToWorldAndParallax[1].xyz = tangentToWorld[1];
-		o.tangentToWorldAndParallax[2].xyz = tangentToWorld[2];
+		o.tangentToWorldAndPackedData[0].xyz = tangentToWorld[0];
+		o.tangentToWorldAndPackedData[1].xyz = tangentToWorld[1];
+		o.tangentToWorldAndPackedData[2].xyz = tangentToWorld[2];
 	#else
-		o.tangentToWorldAndParallax[0].xyz = 0;
-		o.tangentToWorldAndParallax[1].xyz = 0;
-		o.tangentToWorldAndParallax[2].xyz = normalWorld;
+		o.tangentToWorldAndPackedData[0].xyz = 0;
+		o.tangentToWorldAndPackedData[1].xyz = 0;
+		o.tangentToWorldAndPackedData[2].xyz = normalWorld;
 	#endif
 	//We need this for shadow receving
 	TRANSFER_SHADOW(o);
@@ -115,21 +114,21 @@ VertexOutputForwardBase_VC vertForwardBase_VC (VertexInput_VC v)
 	return o;
 }
 
-half4 fragForwardBase_VC (VertexOutputForwardBase_VC i) : SV_Target
+float4 fragForwardBase_VC (VertexOutputForwardBase_VC i) : SV_Target
 {
 	FRAGMENT_SETUP(s)
-	UnityLight mainLight = MainLight (s.normalWorld);
+	UnityLight mainLight = MainLight();
 	half atten = SHADOW_ATTENUATION(i);
 
 	half occlusion = Occlusion(i.tex.xy);
 	UnityGI gi = FragmentGI (
-		s.posWorld, occlusion, i.ambientOrLightmapUV, atten, s.oneMinusRoughness, s.normalWorld, s.eyeVec, mainLight);
+		s.posWorld, occlusion, i.ambientOrLightmapUV, atten, s.smoothness, s.normalWorld, s.eyeVec, mainLight);
 
-	half4 c = UNITY_BRDF_PBS (s.diffColor, s.specColor, s.oneMinusReflectivity, s.oneMinusRoughness, s.normalWorld, -s.eyeVec, gi.light, gi.indirect);
+	half4 c = UNITY_BRDF_PBS (s.diffColor, s.specColor, s.oneMinusReflectivity, s.smoothness, s.normalWorld, -s.eyeVec, gi.light, gi.indirect);
 
         c *= i.color;
 
-	c.rgb += UNITY_BRDF_GI (s.diffColor, s.specColor, s.oneMinusReflectivity, s.oneMinusRoughness, s.normalWorld, -s.eyeVec, occlusion, gi);
+	c.rgb += UNITY_BRDF_GI (s.diffColor, s.specColor, s.oneMinusReflectivity, s.smoothness, s.normalWorld, -s.eyeVec, occlusion, gi);
 	c.rgb += Emission(i.tex.xy);
 
 	UNITY_APPLY_FOG(i.fogCoord, c.rgb);
@@ -143,7 +142,7 @@ struct VertexOutputDeferred_VC
     fixed4 color                        : COLOR;
 	float4 tex							: TEXCOORD0;
 	half3 eyeVec 						: TEXCOORD1;
-	half4 tangentToWorldAndParallax[3]	: TEXCOORD2;	// [3x3:tangentToWorld | 1x3:viewDirForParallax]
+	float4 tangentToWorldAndPackedData[3]	: TEXCOORD2;	// [3x3:tangentToWorld | 1x3:viewDirForParallax]
 	half4 ambientOrLightmapUV			: TEXCOORD5;	// SH or Lightmap UVs			
 	#if UNITY_SPECCUBE_BOX_PROJECTION
 		float3 posWorld						: TEXCOORD6;
@@ -167,13 +166,13 @@ VertexOutputDeferred_VC vertDeferred_VC (VertexInput_VC v)
 		float4 tangentWorld = float4(UnityObjectToWorldDir(v.tangent.xyz), v.tangent.w);
 
 		float3x3 tangentToWorld = CreateTangentToWorldPerVertex(normalWorld, tangentWorld.xyz, tangentWorld.w);
-		o.tangentToWorldAndParallax[0].xyz = tangentToWorld[0];
-		o.tangentToWorldAndParallax[1].xyz = tangentToWorld[1];
-		o.tangentToWorldAndParallax[2].xyz = tangentToWorld[2];
+		o.tangentToWorldAndPackedData[0].xyz = tangentToWorld[0];
+		o.tangentToWorldAndPackedData[1].xyz = tangentToWorld[1];
+		o.tangentToWorldAndPackedData[2].xyz = tangentToWorld[2];
 	#else
-		o.tangentToWorldAndParallax[0].xyz = 0;
-		o.tangentToWorldAndParallax[1].xyz = 0;
-		o.tangentToWorldAndParallax[2].xyz = normalWorld;
+		o.tangentToWorldAndPackedData[0].xyz = 0;
+		o.tangentToWorldAndPackedData[1].xyz = 0;
+		o.tangentToWorldAndPackedData[2].xyz = normalWorld;
 	#endif
 
 	#ifndef LIGHTMAP_OFF
@@ -223,17 +222,17 @@ void fragDeferred_VC (
 	FRAGMENT_SETUP(s)
 
 	// no analytic lights in this pass
-	UnityLight dummyLight = DummyLight (s.normalWorld);
+	UnityLight dummyLight = DummyLight();
 	half atten = 1;
 
 	// only GI
 	half occlusion = Occlusion(i.tex.xy);
 	UnityGI gi = FragmentGI (
-		s.posWorld, occlusion, i.ambientOrLightmapUV, atten, s.oneMinusRoughness, s.normalWorld, s.eyeVec, dummyLight);
+		s.posWorld, occlusion, i.ambientOrLightmapUV, atten, s.smoothness, s.normalWorld, s.eyeVec, dummyLight);
 
-	half3 color = UNITY_BRDF_PBS (s.diffColor, s.specColor, s.oneMinusReflectivity, s.oneMinusRoughness, s.normalWorld, -s.eyeVec, gi.light, gi.indirect).rgb;
+	half3 color = UNITY_BRDF_PBS (s.diffColor, s.specColor, s.oneMinusReflectivity, s.smoothness, s.normalWorld, -s.eyeVec, gi.light, gi.indirect).rgb;
         color *= i.color;
-	color += UNITY_BRDF_GI (s.diffColor, s.specColor, s.oneMinusReflectivity, s.oneMinusRoughness, s.normalWorld, -s.eyeVec, occlusion, gi);
+	color += UNITY_BRDF_GI (s.diffColor, s.specColor, s.oneMinusReflectivity, s.smoothness, s.normalWorld, -s.eyeVec, occlusion, gi);
 
 	#ifdef _EMISSION
 		color += Emission (i.tex.xy);
@@ -244,7 +243,7 @@ void fragDeferred_VC (
 	#endif
 
 	outDiffuse = half4(s.diffColor * i.color.rgb, occlusion);
-	outSpecSmoothness = half4(s.specColor * i.color.rgb, s.oneMinusRoughness);
+	outSpecSmoothness = half4(s.specColor * i.color.rgb, s.smoothness);
 	outNormal = half4(s.normalWorld*0.5+0.5,1);
 	outEmission = half4(color, 1);
 }
